@@ -1,0 +1,13 @@
+# Files used for testing
+test
+psh.json
+
+# Source for Interface
+lib\Psh
+
+# IDE Settings
+.vscode
+
+# Debugging Information
+*.pdb
+*.xml
