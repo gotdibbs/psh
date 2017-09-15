@@ -1,0 +1,19 @@
+{
+  "name": "psh",
+  "version": "1.0.0",
+  "description": "",
+  "bin": {
+    "psh": "index.js"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "edge": "^7.10.1",
+    "keytar": "^4.0.4",
+    "shelljs": "^0.7.8"
+  }
+}
