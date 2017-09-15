@@ -7,11 +7,13 @@ const crm = require('./lib/crm');
 // TODO: support minification
 
 getConfig().then((config) => {
-    if (config.verbose) {
+    if (config && config.verbose) {
         console.log(config);
     }
 
-    return crm.push(config);
+    if (config) {
+        return crm.push(config);
+    }
 }).then((result) => {
     console.log(result);
 

@@ -1,7 +1,7 @@
 {
-  "name": "psh",
+  "name": "node-psh",
   "version": "1.0.0",
-  "description": "",
+  "description": "Push Web Resources to Dynamics 365 via Command Line",
   "bin": {
     "psh": "index.js"
   },
@@ -9,8 +9,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "homepage": "https://github.com/gotdibbs/psh",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gotdibbs/psh"
+  },
+  "author": "gotdibbs",
+  "license": "MIT",
   "dependencies": {
     "edge": "^7.10.1",
     "keytar": "^4.0.4",

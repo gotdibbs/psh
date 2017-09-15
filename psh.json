@@ -1,5 +1,5 @@
 {
-    "root": "dist",
-    "connectionName": "NTS",
-    "solutionName": "NTS"
+    "root": "test",
+    "connectionName": "Dev",
+    "solutionName": "Default"
 }
