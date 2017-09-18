@@ -14,25 +14,20 @@ namespace Psh.Interface
 {
     public class Startup
     {
-        public async Task<object> Invoke(dynamic config)
+        public async Task<object> Invoke(dynamic sourceConfig)
         {
             try
             {
-                string connectionString = config.connectionString;
-                string solutionName = config.solutionName;
-                string path = config.path;
-
-                if (config.files != null && config.files.Length > 0)
-                {
-                    // Convert our dynamic files object to strings since this can't be done implicitly
-                    config.files = ((object[])config.files).Select(f => (string)f).ToArray();
-                }
+                var config = ConvertDynamic<Config>(sourceConfig);
+                string connectionString = config.ConnectionString;
+                string solutionName = config.SolutionName;
+                string path = config.Path;
 
                 var connection = new CrmServiceClient(connectionString);
 
-                var solution = GetSolution(connection, config.solutionName);
+                var solution = GetSolution(connection, config.SolutionName);
 
-                var webResources = GetFiles(path, config.files, solution.CustomizationPrefix);
+                var webResources = GetFiles(path, config.Files, solution.CustomizationPrefix, config.RootNamespace);
 
                 foreach (var resource in webResources)
                 {
@@ -47,13 +42,13 @@ namespace Psh.Interface
                         resource.Create = true;
                     }
 
-                    if (!config.dryRun)
+                    if (!config.DryRun)
                     {
-                        Upsert(connection, resource, config.solutionName);
+                        Upsert(connection, resource, config.SolutionName);
                     }
                 }
 
-                if (!config.dryRun)
+                if (!config.DryRun)
                 {
                     Publish(connection, webResources);
                 }
@@ -65,6 +60,12 @@ namespace Psh.Interface
                 Console.WriteLine(ex);
                 throw;
             }
+        }
+
+        private T ConvertDynamic<T>(IDictionary<string, object> dictionary)
+        {
+            var source = Newtonsoft.Json.JsonConvert.SerializeObject(dictionary);
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(source);
         }
 
         private Solution GetSolution(CrmServiceClient connection, string solutionName)
@@ -107,7 +108,7 @@ namespace Psh.Interface
             };
         }
 
-        private WebResource[] GetFiles(string sourceDirectory, string[] files, string customizationPrefix)
+        private WebResource[] GetFiles(string sourceDirectory, string[] files, string customizationPrefix, string rootNamespace)
         {
             if (!Directory.Exists(sourceDirectory))
             {
@@ -124,7 +125,7 @@ namespace Psh.Interface
             return Constants.ValidExtensions
                 .SelectMany(extension => Directory.GetFiles(sourceDirectory, $"*.{extension}", SearchOption.AllDirectories))
                 .Where(resourcePath => filterFiles ? files.Any(f => f == resourcePath) : true)
-                .Select(resourcePath => new WebResource(sourceDirectory, resourcePath, customizationPrefix))
+                .Select(resourcePath => new WebResource(sourceDirectory, resourcePath, customizationPrefix, rootNamespace))
                 .ToArray();
         }
 

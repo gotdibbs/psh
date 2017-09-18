@@ -16,6 +16,7 @@
 2. Create a new file called `psh.json`
 3. The file should contain a json object with these three properties:
  - `root`: The root folder, relative to the current folder, that you wish to push web resources from. Ex. `dist`.
+ - `rootNamespace` `[Optional]`: The root namespace to be used for all web resources. For example, if your resource would normally be named `new_/test.js` and you want it to be `new_/CustomUI/test.js` you would specify `CustomUI` for the `rootNamespace` option.
  - `connectionName`: Unique identifier of the connection string that will be stored in your credential manager. This can be reused across projects. The first time you run `psh` it will prompty you to specify a valid D365 connection string to store under this name. Example value to be entered when prompted: `AuthType=Office365;Url=https://orgname.crm.dynamics.com/;Username=wdibbern@example.onmicrosoft.com;Password=somethingsecure;RequireNewInstance=true`. Note that in VS Code you can paste this setting directly into the terminal when prompted.
  - `solutionName`: The unique name of the solution the associated web resources will be pushed to.
 
@@ -41,6 +42,10 @@ By default the utility will build the names of your web resources based on their
 # Invocation
 
 From a command prompt set to the same directory as your `psh.json` file, run `psh`. For more control, see the optional arguments below. Note that any of the following optional arguments can be combined.
+
+```
+psh [init] [reset] [test] [verbose] [f=[file list]]
+```
 
 Optional arguments:
 

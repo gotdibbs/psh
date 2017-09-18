@@ -30,7 +30,7 @@ namespace Psh.Interface
 
         public bool Create { get; set; }
 
-        public WebResource(string sourceDirectory, string resourcePath, string customizationPrefix)
+        public WebResource(string sourceDirectory, string resourcePath, string customizationPrefix, string rootNamespace)
         {
             FilePath = resourcePath;
             CustomizationPrefix = customizationPrefix;
@@ -38,6 +38,11 @@ namespace Psh.Interface
             if (File.Exists(FilePath + ".psh"))
             {
                 var config = JsonConvert.DeserializeObject<Override>(File.ReadAllText(FilePath + ".psh"));
+
+                if (config == null || string.IsNullOrEmpty(config.Namespace))
+                {
+                    throw new ArgumentException($"Encountered an override for {FilePath} but it was invalid. Please review and try again.");
+                }
 
                 Namespace = config.Namespace;
                 Description = config.Description;
@@ -48,6 +53,20 @@ namespace Psh.Interface
                 Namespace = resourcePath
                         .Replace(sourceDirectory, string.Empty)
                         .Replace("\\", "/");
+
+                if (!string.IsNullOrEmpty(rootNamespace))
+                {
+                    if (!rootNamespace.StartsWith("/"))
+                    {
+                        rootNamespace = "/" + rootNamespace;
+                    }
+                    if (rootNamespace.EndsWith("/"))
+                    {
+                        rootNamespace = rootNamespace.Remove(rootNamespace.Length - 1);
+                    }
+
+                    Namespace = rootNamespace + Namespace;
+                }
             }
 
             WebResourceType = ConvertStringExtension(Path.GetExtension(Namespace));
