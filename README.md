@@ -4,14 +4,15 @@ A lovely little utility to get your web resources into Dynamics 365 quicker.
 
 ## Prerequisites
 
-1. Visual Studio with Visual C++ enabled/installed.
-2. From an administrative command prompt, run `npm i -g --production windows-build-tools` for windows or ensure prerequisites for `node-gyp` are installed another way.
+1. Nodejs (v.7.10.1 max, at time of writing)
+2. Visual Studio with Visual C++ enabled/installed.
+3. From an administrative command prompt, run `npm i -g --production windows-build-tools` for windows or ensure prerequisites for `node-gyp` are installed another way.
 
 ### Common Install Issues
 
  - If you receive an error something to the effect of "cannot find 'CL.EXE'" this is likely because your Visual Studio install did not include C++. Please try going to add/remove programs, Visual Studio, Change, and ensure the C++ feature set is checked off.
- - If you receive an error from edge.js about not having the right node version, just check the npm page for the edge package. The version number of edge should match the version number of node that is required.
- - If #2 from the prerequisites fails on Windows, make sure you're command prompt is running as an administrator.
+ - If you receive an error from edge.js about not having the right node version, just check the [npm page for the edge package](https://www.npmjs.com/package/edge). The version number of edge should match the version number of node that is required. You can check the current version of node that is installed by running `node -v` from a command prompt.
+ - If #3 from the prerequisites fails on Windows, make sure you're command prompt is running as an administrator.
 
 ## Invocation
 
@@ -23,14 +24,14 @@ psh [init] [reset] [test] [verbose] [f=[file list]]
 
 Arguments:
 
- - `init` `[Optional]`: if no `psh.json` file exists at the current working directory, `psh` will attempt to create one and guide you through specifying the required settings.
- - `reset` `[Optional]`: allows you to update the stored connection string. Ex. `push reset`.
- - `test` `[Optional]`: reports exactly what the utility plans to do, without actually creating, updating, or publishing anything in Dynamics. Ex. `push test`.
+ - `init` `[Optional]`: if no `psh.json` file exists at the current working directory, `psh` will attempt to create one and guide you through specifying the required settings. Ex. `psh init test`.
+ - `reset` `[Optional]`: allows you to update the stored connection string. Ex. `psh reset`.
+ - `test` `[Optional]`: reports exactly what the utility plans to do, without actually creating, updating, or publishing anything in Dynamics. Ex. `psh test`.
  - `verbose` `[Optional]`: displays the configuration object to be passed to the C# module. Helpful to check your settings, but note that your connection string will be displayed (may include your password). Ex. `psh verbose`.
  - `f=[file]` or `f=[file1],[file2]`  `[Optional]`: allows you to push only a subset of files to Dynamics 365. For example, if you only wanted to push the file `dist\js\bundle.js` and your root folder was set to `dist` you would run `psh f=js\bundle.js`.
 
  An example with everything combined would be entirely valid and would be:
- `psh test verbose f=contact.js reset`
+ `psh init test verbose f=contact.js reset`
 
  This would first prompt you to update your connection string, then log out the configuration object, and then a log would display showing that the utility is trying to create/update only `contact.js` from your root folder.
 
