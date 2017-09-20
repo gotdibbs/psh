@@ -19,15 +19,12 @@ namespace Psh.Interface
             try
             {
                 var config = ConvertDynamic<Config>(sourceConfig);
-                string connectionString = config.ConnectionString;
-                string solutionName = config.SolutionName;
-                string path = config.Path;
 
-                var connection = new CrmServiceClient(connectionString);
+                var connection = new CrmServiceClient(config.ConnectionString);
 
                 var solution = GetSolution(connection, config.SolutionName);
 
-                var webResources = GetFiles(path, config.Files, solution.CustomizationPrefix, config.RootNamespace);
+                var webResources = GetFiles(config, solution.CustomizationPrefix);
 
                 foreach (var resource in webResources)
                 {
@@ -108,24 +105,46 @@ namespace Psh.Interface
             };
         }
 
-        private WebResource[] GetFiles(string sourceDirectory, string[] files, string customizationPrefix, string rootNamespace)
+        private WebResource[] GetFiles(Config config, string customizationPrefix)
         {
-            if (!Directory.Exists(sourceDirectory))
+            if (!Directory.Exists(config.Path))
             {
                 throw new ArgumentException("Specified directory does not exist. Please check your configuration.");
             }
 
-            var filterFiles = false;
-            if (files != null && files.Length > 0)
+            var singleFilesFilter = false;
+            if (config.Files != null && config.Files.Length > 0)
             {
-                filterFiles = true;
-                files = files.Select(f => Path.GetFullPath(Path.Combine(sourceDirectory, f))).ToArray();
+                singleFilesFilter = true;
+                config.Files = config.Files.Select(f => Path.GetFullPath(Path.Combine(config.Path, f))).ToArray();
+            }
+
+            var ignoreFilter = false;
+            if (config.Ignore != null && config.Ignore.Length > 0)
+            {
+                ignoreFilter = true;
+                config.Ignore = config.Ignore.Select(f => Path.GetFullPath(Path.Combine(config.Path, f))).ToArray();
+            }
+
+            if (config.Overrides != null && config.Overrides.Length > 0)
+            {
+                if (config.Overrides.Any(o => string.IsNullOrEmpty(o.File)))
+                {
+                    throw new ArgumentException("Encountered an Override without the file path fragment specified. Please review your config and try again.");
+                }
+
+                foreach (var o in config.Overrides)
+                {
+                    o.File = Path.GetFullPath(Path.Combine(config.Path, o.File));
+                }
             }
 
             return Constants.ValidExtensions
-                .SelectMany(extension => Directory.GetFiles(sourceDirectory, $"*.{extension}", SearchOption.AllDirectories))
-                .Where(resourcePath => filterFiles ? files.Any(f => f == resourcePath) : true)
-                .Select(resourcePath => new WebResource(sourceDirectory, resourcePath, customizationPrefix, rootNamespace))
+                .SelectMany(extension => Directory.GetFiles(config.Path, $"*.{extension}", SearchOption.AllDirectories))
+                .Distinct()
+                .Where(resourcePath => singleFilesFilter ? config.Files.Any(f => f == resourcePath) : true)
+                .Where(resourcePath => ignoreFilter ? !config.Ignore.Any(f => f == resourcePath) : true)
+                .Select(resourcePath => new WebResource(config, resourcePath, customizationPrefix))
                 .ToArray();
         }
 

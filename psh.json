@@ -1,5 +1,16 @@
 {
     "root": "test",
+    "rootNamespace": "JurassicBark",
     "connectionName": "Dev",
-    "solutionName": "Default"
+    "solutionName": "Default",
+    "ignore": [
+        "test\\text.xml"
+    ],
+    "overrides": [
+        {
+            "file": "test.png",
+            "namespace": "/123/abc.png",
+            "description": "testing"
+        }
+    ]
 }

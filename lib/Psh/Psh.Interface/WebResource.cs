@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Psh.Interface
@@ -30,42 +31,42 @@ namespace Psh.Interface
 
         public bool Create { get; set; }
 
-        public WebResource(string sourceDirectory, string resourcePath, string customizationPrefix, string rootNamespace)
+        public WebResource(Config config, string resourcePath, string customizationPrefix)
         {
             FilePath = resourcePath;
             CustomizationPrefix = customizationPrefix;
 
+            Override overrideConfig = null;
+            
             if (File.Exists(FilePath + ".psh"))
             {
-                var config = JsonConvert.DeserializeObject<Override>(File.ReadAllText(FilePath + ".psh"));
+                overrideConfig = JsonConvert.DeserializeObject<Override>(File.ReadAllText(FilePath + ".psh"));
+            }
+            else if (config.Overrides != null)
+            {
+                overrideConfig = config.Overrides.FirstOrDefault(o => o.File == FilePath);
+            }
 
-                if (config == null || string.IsNullOrEmpty(config.Namespace))
+            if (overrideConfig != null)
+            {
+                if (string.IsNullOrEmpty(overrideConfig.Namespace))
                 {
                     throw new ArgumentException($"Encountered an override for {FilePath} but it was invalid. Please review and try again.");
                 }
 
-                Namespace = config.Namespace;
-                Description = config.Description;
+                Namespace = overrideConfig.Namespace;
+                Description = overrideConfig.Description;
             }
 
             if (string.IsNullOrEmpty(Namespace))
             {
                 Namespace = resourcePath
-                        .Replace(sourceDirectory, string.Empty)
+                        .Replace(config.Path, string.Empty)
                         .Replace("\\", "/");
 
-                if (!string.IsNullOrEmpty(rootNamespace))
+                if (!string.IsNullOrEmpty(config.RootNamespace))
                 {
-                    if (!rootNamespace.StartsWith("/"))
-                    {
-                        rootNamespace = "/" + rootNamespace;
-                    }
-                    if (rootNamespace.EndsWith("/"))
-                    {
-                        rootNamespace = rootNamespace.Remove(rootNamespace.Length - 1);
-                    }
-
-                    Namespace = rootNamespace + Namespace;
+                    Namespace = config.RootNamespace + Namespace;
                 }
             }
 

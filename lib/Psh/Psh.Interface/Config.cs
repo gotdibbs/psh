@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Psh.Interface
+﻿namespace Psh.Interface
 {
-    public class Config
+    internal class Config
     {
         public string ConnectionString { get; set; }
 
@@ -16,8 +10,34 @@ namespace Psh.Interface
 
         public string Path { get; set; }
 
-        public string RootNamespace { get; set; }
+        private string _rootNamespace;
+        public string RootNamespace
+        {
+            get { return _rootNamespace; }
+            set
+            {
+                if (_rootNamespace == value)
+                {
+                    return;
+                }
+
+                if (!value.StartsWith("/"))
+                {
+                    value = "/" + value;
+                }
+                if (value.EndsWith("/"))
+                {
+                    value = value.Remove(value.Length - 1);
+                }
+
+                _rootNamespace = value;
+            }
+        }
 
         public string SolutionName { get; set; }
+
+        public string[] Ignore { get; set; }
+
+        public Override[] Overrides { get; set; }
     }
 }
