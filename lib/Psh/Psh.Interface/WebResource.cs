@@ -70,7 +70,7 @@ namespace Psh.Interface
                 }
             }
 
-            WebResourceType = ConvertStringExtension(Path.GetExtension(Namespace));
+            WebResourceType = ConvertStringExtension(Path.GetExtension(FilePath));
 
             Validate();
         }
@@ -100,7 +100,7 @@ namespace Psh.Interface
                 case "xsl":
                     return WebResourceType.Stylesheet_XSL;
                 default:
-                    throw new ArgumentOutOfRangeException($"{extensionValue} is not recognized as a valid file extension for a Web Resource.");
+                    throw new ArgumentOutOfRangeException("extensionValue", $"{extensionValue} is not recognized as a valid file extension for a Web Resource.");
             }
         }
 

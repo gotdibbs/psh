@@ -221,7 +221,7 @@ namespace Psh.Interface
         private string GetLog(WebResource[] webResources)
         {
             return string.Join("\n\r",
-                webResources.Select(wr => $"Web Resource '{wr.Name}' {GetAction(wr.Create)} from '{wr.FilePath}'."));
+                webResources.Select(wr => $"Web Resource '{wr.Name}' of type '{wr.WebResourceType.ToString()}' {GetAction(wr.Create)} from '{wr.FilePath}'."));
         }
 
         private string GetAction(bool isCreate)

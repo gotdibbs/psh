@@ -9,7 +9,7 @@
     "overrides": [
         {
             "file": "test.png",
-            "namespace": "/123/abc.png",
+            "namespace": "/123/abc",
             "description": "testing"
         }
     ]
